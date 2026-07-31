@@ -1,22 +1,31 @@
-# zpwsh - ZEAZ PowerShell Platform Engine
+# zpwsh - PowerShell Preview Professional Theme v2.0.0 Final Release
 
-`zpwsh` is the PowerShell engine and environment framework for the ZEAZ Platform on Windows 11 & Cross-Platform PowerShell 7+.
+Production-grade PowerShell Environment Framework & Professional Theme Suite for Windows 11, Windows Terminal, VS Code Terminal, ConHost, and PowerShell 7+ (Stable & Preview 7.5/7.6/7.7).
 
 ## Features
 
-- **Null Index Safety Guard**: Prevents PowerShell `$PROFILE` errors such as `InvalidOperation: Index operation failed; the array index evaluated to null`.
-- **ZEAZ Windows 11 Master Installation**: Integrated one-click master setup.
-- **Cross-Platform Compatibility**: Full support for PowerShell Core (`pwsh`) and Windows PowerShell (`powershell.exe`).
+- **Transaction-Based Installer**: Atomic install, clean install, repair, uninstall, and automatic rollback.
+- **Compatibility Engine**: Tested across PS Stable & PS 7.7 Preview, Windows Terminal, VS Code, and ConHost.
+- **Dependency & Module Manager**: WinGet detection, offline fallback, safe compatibility checks before module import (PSReadLine, CompletionPredictor, OhMyPosh, Terminal-Icons).
+- **Dynamic Theme Engine**: Dynamic theme generation, validation, migration, backup, and restore.
+- **Managed Profile Engine**: Non-destructive managed blocks in `$PROFILE` with automatic backup & restore.
+- **Health Check & Diagnostics**: System audits generating structured JSON, HTML, and TXT diagnostic reports.
+- **Security & Integrity**: SHA-256 manifest verification and zero-destructive execution guarantee.
 
-## Installation
-
-Add the following to your PowerShell `$PROFILE`:
+## Quick Installation
 
 ```powershell
 Import-Module "$HOME/zpwsh/zpwsh.psm1"
+Invoke-ZpwshInstaller -Apply
 ```
 
-To edit your `$PROFILE`:
+## Running Diagnostics & Health Checks
+
 ```powershell
-notepad $PROFILE
+Test-ZpwshHealth
+Export-ZpwshDiagnostics -Format HTML
 ```
+
+## License
+
+MIT License - Copyright (c) 2026 cvsz
