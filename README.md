@@ -1,30 +1,63 @@
-# zpwsh - PowerShell Preview Professional Theme v2.0.0 Final Release
+# zpwsh - PowerShell Helper Module v2.0.0 Final Release
 
-Production-grade PowerShell Environment Framework & Professional Theme Suite for Windows 11, Windows Terminal, VS Code Terminal, ConHost, and PowerShell 7+ (Stable & Preview 7.5/7.6/7.7).
+PowerShell module for safe array helpers, module import checks, profile block management, health checks, and diagnostics export.
 
 ## Features
 
-- **Transaction-Based Installer**: Atomic install, clean install, repair, uninstall, and automatic rollback.
-- **Compatibility Engine**: Tested across PS Stable & PS 7.7 Preview, Windows Terminal, VS Code, and ConHost.
-- **Dependency & Module Manager**: WinGet detection, offline fallback, safe compatibility checks before module import (PSReadLine, CompletionPredictor, OhMyPosh, Terminal-Icons).
-- **Dynamic Theme Engine**: Dynamic theme generation, validation, migration, backup, and restore.
-- **Managed Profile Engine**: Non-destructive managed blocks in `$PROFILE` with automatic backup & restore.
-- **Health Check & Diagnostics**: System audits generating structured JSON, HTML, and TXT diagnostic reports.
-- **Security & Integrity**: SHA-256 manifest verification and zero-destructive execution guarantee.
+- **Safe Array Helpers**: Null-safe indexing helpers for profile and startup scripts.
+- **Compatibility Checks**: Pre-import checks for `PSReadLine`, `CompletionPredictor`, `oh-my-posh`, and `Terminal-Icons`.
+- **Profile Management**: Managed profile block injection, cleanup, uninstall, backup, and restore support.
+- **Health Check & Diagnostics**: Structured health audits with JSON, HTML, and TXT export, including `PASS` and `WARN` status states.
+- **Installer Modes**: `-Apply`, `-Repair`, `-Clean`, `-Uninstall`, `-Silent`, `-Force`, and standard PowerShell dry-run support via `-WhatIf` / `-Confirm`.
+- **Module Manifest**: Package entrypoint in `zpwsh.psd1` for clean module import and export control.
 
 ## Quick Installation
 
 ```powershell
-Import-Module "$HOME/zpwsh/zpwsh.psm1"
-Invoke-ZpwshInstaller -Apply
+Import-Module ./zpwsh.psd1
+Invoke-ZpwshInstaller -Apply -Force
 ```
+
+## Windows Installer
+
+From a Windows shell, you can run the packaged installer directly:
+
+```powershell
+.\windows\Install-Zpwsh.ps1 -Action Install -Force
+```
+
+Or use the double-clickable launcher:
+
+```cmd
+windows\Install-Zpwsh.cmd
+```
+
+The installer copies the module into the standard PowerShell module location for the current edition and scope, then updates the managed profile block unless `-SkipProfileUpdate` is used.
+
+Use `-TargetEdition Desktop`, `-TargetEdition Core`, or `-TargetEdition Auto` to control whether the module is installed for Windows PowerShell 5.1 or PowerShell 7+. The command-line launcher prefers `pwsh.exe` when it is available and falls back to `powershell.exe` otherwise.
+
+## Build Package
+
+To create a distributable Windows installer ZIP locally:
+
+```powershell
+./windows/Build-ZpwshInstaller.ps1 -Force
+```
+
+The GitHub Actions workflow at [`.github/workflows/windows-installer.yml`](.github/workflows/windows-installer.yml) builds the same package on `windows-latest` and uploads `dist/zpwsh-windows-installer-<version>.zip` as an artifact.
+
+Tagged releases (`v*`) are published by [`.github/workflows/windows-release.yml`](.github/workflows/windows-release.yml), which uploads the versioned ZIP as a GitHub Release asset.
 
 ## Running Diagnostics & Health Checks
 
 ```powershell
 Test-ZpwshHealth
-Export-ZpwshDiagnostics -Format HTML
+Export-ZpwshDiagnostic -Format HTML
 ```
+
+Legacy plural aliases (`Import-ZpwshModules`, `Export-ZpwshDiagnostics`) remain available for compatibility.
+
+Managed profile updates are literal-path safe, so profile or module paths containing wildcard characters or apostrophes are handled correctly.
 
 ## License
 

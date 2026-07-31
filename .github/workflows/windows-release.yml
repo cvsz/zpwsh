@@ -1,0 +1,49 @@
+name: windows-release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release-windows-installer:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          if (-not (Get-Module -ListAvailable Pester)) {
+            Install-Module Pester -Scope CurrentUser -Force -AllowClobber
+          }
+
+      - name: Run module tests
+        shell: pwsh
+        run: |
+          Import-Module Pester -Force
+          Invoke-Pester ./tests/zpwsh.Tests.ps1 -PassThru | Out-Null
+
+      - name: Run installer smoke tests
+        shell: pwsh
+        run: |
+          Import-Module Pester -Force
+          Invoke-Pester ./tests/windows-installer.Tests.ps1 -PassThru | Out-Null
+
+      - name: Build Windows installer package
+        shell: pwsh
+        run: |
+          $build = & ./windows/Build-ZpwshInstaller.ps1 -Force
+          "artifact_path=$($build.OutputPath)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+        id: build
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.build.outputs.artifact_path }}
+          generate_release_notes: true

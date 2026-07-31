@@ -8,13 +8,15 @@
 
 ### 2. Terminal-Icons Error in PowerShell 7.7 Preview
 - **Cause**: Breaking object property changes in PS 7.7 Preview.
-- **Solution**: `zpwsh` validates module compatibility prior to importing. If an incompatible version is detected, it cleanly bypasses module registration without failing prompt loading.
+- **Solution**: `zpwsh` checks whether a module resolves to a real on-disk path before trying to import it. If the import fails, it is skipped without breaking prompt loading.
 
 ### 3. Running Diagnostic Audits
 To generate a diagnostic report:
 ```powershell
-Export-ZpwshDiagnostics -Format HTML
+Export-ZpwshDiagnostic -Format HTML
 ```
+
+Legacy plural aliases remain available if you already use older command names.
 
 ### 4. Full Repair or Rollback
 ```powershell
@@ -23,4 +25,12 @@ Invoke-ZpwshInstaller -Repair
 
 # Perform complete clean rollback
 Invoke-ZpwshInstaller -Clean -Force
+
+# Remove the managed profile block and restore the backup when available
+Invoke-ZpwshInstaller -Uninstall -Force
+
+# Preview the change without modifying files
+Invoke-ZpwshInstaller -Apply -WhatIf
 ```
+
+If your profile or module path includes wildcard characters or apostrophes, the managed profile block now uses literal-path-safe quoting and should still load correctly.
